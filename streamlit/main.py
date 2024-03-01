@@ -14,7 +14,7 @@ with left and right:
 with main:
     # st.write('<center><h1>Unity ML</h1></center><br><br>', unsafe_allow_html=True)
     dataset_path = st.file_uploader("Upload the dataset", type=['csv'])
-    dataset_path = r"test\spg.csv" if not dataset_path else dataset_path
+    dataset_path = r"spg.csv" if not dataset_path else dataset_path
     
     y_col = st.empty()
     y = y_col.selectbox('Select Target Column', ['Please upload the dataset first'])
