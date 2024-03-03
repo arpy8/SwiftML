@@ -1,6 +1,6 @@
 import streamlit as st
 from pycaret.regression import *
-from config import model_mapping
+from unityml.constants import MODELS_DICT
 
 INFO_COLOR = 'info'
 SUCCESS_COLOR = 'success'
@@ -48,7 +48,7 @@ def compare_and_get_best_model(_temp_container):
 def build_and_evaluate_best_model(_temp_container, best_model):
     global count1, count2
     model_name = type(best_model).__name__
-    model_id = model_mapping.get(model_name, None)
+    model_id = MODELS_DICT.get(model_name, None)
 
     if model_id is not None:
         log_message(_temp_container, "Best model found, building the best model...", INFO_COLOR)
@@ -63,6 +63,7 @@ def build_and_evaluate_best_model(_temp_container, best_model):
         log_message(_temp_container, "Model saved successfully...", SUCCESS_COLOR)
         
         return model
+    
     else:
         log_message(_temp_container, "Model ID not found in the mapping.", "error")
         return None
@@ -71,7 +72,7 @@ def save_model_to_file(_temp_container, model, model_name):
     save_model(model, "testmodel123")
     log_message(_temp_container, "Model saved successfully...", SUCCESS_COLOR)
 
-def best_regressor(_temp_container, _temp, data, y):
+def best_regressor(_temp_container, data, y):
     global count1, count2
     try:
         setup_environment(_temp_container, data, y)

@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Micro+5&display=swap');
+.heading {
+    font-family: "Micro 5";
+    font-weight: 400% !important;
+    font-size:10vh;
+        
+    width:100%;
+    
+    margin: 0 auto;
+    text-align: center;
+    
+    position: absolute;
+    -webkit-animation:colorchange 2s infinite alternate;
+
+    margin: -25% 0;
+}
+
+section[data-testid='stSidebar'] {
+    background-color: lightblue !important;
+    flex-shrink: unset !important;
+    
+}
+
+@media(hover:hover) and (min-width: 600px) and (max-width: 769px){
+
+    header[data-testid="stHeader"] {
+        display:none;
+    }
+
+    section[data-testid='stSidebar'] {
+        height: 100%;
+        min-width:95px !important;
+        width: 95px !important;
+        margin-left: 305px;
+        position: relative;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: lightblue !important;
+        overflow-x: hidden;
+        transition: 0.5s ease;
+        padding-top: 60px;
+        white-space: nowrap;
+    }
+
+    section[data-testid='stSidebar']:hover{
+        min-width: 330px !important;
+        }
+
+    button[kind="header"] {
+        display: none;
+    }
+
+    div[data-testid="collapsedControl"]{
+        display: none;
+    }
+
+}
+
+@media(hover: hover) and (min-width: 769px){
+
+    header[data-testid="stHeader"] {
+        display:none;
+    }
+
+    section[data-testid='stSidebar'] {
+        height: 100%;
+        min-width:95px !important;
+        width: 95px !important;
+        transform:translateX(0px);
+        position: relative;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: lightblue !important;
+        overflow-x: hidden;
+        transition: 0.5s ease;
+        padding-top: 60px;
+        white-space: nowrap;
+    }
+
+    section[data-testid='stSidebar']:hover{
+        min-width: 330px !important;
+        }
+
+    button[kind="header"] {
+        display: none;
+    }
+
+    div[data-testid="collapsedControl"]{
+        display: none;
+    }
+}

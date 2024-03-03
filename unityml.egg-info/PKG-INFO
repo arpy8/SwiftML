@@ -1,0 +1,24 @@
+Metadata-Version: 2.1
+Name: unityml
+Version: 0.0.1
+Summary: This package lauches the web app locally for unityml.
+Home-page: https://github.com/arpy8/unityml
+Author: Arpit Sengar (arpy8)
+Author-email: arpitsengar99@gmail.com
+License: MIT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+
+# aiconclave
+This package contains the python scripts for the AI conclave exhibition 2023.
+
+- Command Prompt:
+```
+pip install aiconclave && aiconclave
+```
+- Powershell:
+```
+pip install aiconclave ; aiconclave
+```
