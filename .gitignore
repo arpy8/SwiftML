@@ -1,3 +1,7 @@
+/unityml.egg-info
 /unity-ml-test
+/dist
+/build
+
 logs.log
 testmodel123.pkl
