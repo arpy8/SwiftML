@@ -4,7 +4,7 @@ from st_on_hover_tabs import on_hover_tabs
 
 from unityml.utils import *
 from unityml.constants import *
-from unityml.best_reg import best_regressor
+from unityml.model_selection.best_regressor import best_regressor
 
 st.set_page_config(page_title="UnityML", 
                    page_icon=PAGE_ICON,
@@ -21,8 +21,8 @@ with misc3:
 
 with st.sidebar:
     selected_task = on_hover_tabs(
-        tabName=['Home', 'Create Model', 'Deploy App', 'About Us'],
-        iconName=['home', 'psychology', 'task_alt', 'contact_support'],
+        tabName=['Home Page', 'Analyze Data', 'Create Model', 'Deploy App', 'About Us'],
+        iconName=['home', 'psychology', 'build', 'task_alt', 'contact_support'],
         styles = {
             'navtab': {'background-color':'lightblue',
                         'color': 'black',
@@ -34,7 +34,11 @@ with st.sidebar:
         default_choice=0)
 
 
-if selected_task == 'Home':
+if selected_task == 'Home Page':
+    st.write(open(path_converter('components/home.html'), "r").read(), unsafe_allow_html=True)
+    # st.write(open('unityml/components/home.html', 'r').read(), unsafe_allow_html=True)
+
+elif selected_task == 'Analyze Data':
     st.write(open(path_converter('components/home.html'), "r").read(), unsafe_allow_html=True)
     # st.write(open('unityml/components/home.html', 'r').read(), unsafe_allow_html=True)
 

@@ -9,7 +9,7 @@ from termcolor import colored
 from unityml.utils import path_converter
 from unityml.constants import ART, PORT
 
-def fake_loading():
+def boot_sequence():
     for _ in tqdm.tqdm(range(10), desc="Initializing boot sequence..."):
         time.sleep(random.uniform(0.08, 0.12))
 
@@ -31,9 +31,8 @@ def run_streamlit_app(PORT):
 
 def main():
     try:
-        fake_loading()
+        boot_sequence()
         run_streamlit_app(PORT) 
-        
     except KeyboardInterrupt:
         print(colored("Bye Bye 🤫🧏...", "red"))
         exit()

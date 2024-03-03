@@ -34,5 +34,5 @@ setup(
     ],
     include_package_data=True,
     license="MIT",
-    package_data={'unityml': ['assets/*', 'assets/css/*', 'assets/img/*', 'assets/dataset/*', 'components/*']}, 
+    package_data={'unityml': ['*.png', '*.css', '*.csv', '*.html']}, 
 )

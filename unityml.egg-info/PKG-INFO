@@ -11,14 +11,14 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Description-Content-Type: text/markdown
 
-# aiconclave
-This package contains the python scripts for the AI conclave exhibition 2023.
+# UnityML
+This repo contains the source code for the python package - UnityML.
 
 - Command Prompt:
 ```
-pip install aiconclave && aiconclave
+pip install unityml && unityml
 ```
 - Powershell:
 ```
-pip install aiconclave ; aiconclave
+pip install unityml ; unityml
 ```
