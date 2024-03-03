@@ -4,6 +4,7 @@ from unityml.constants import MODELS_DICT
 
 INFO_COLOR = 'info'
 SUCCESS_COLOR = 'success'
+
 loading_blocks = ("▒"*8, "█"*8)
 
 count1 = 8
