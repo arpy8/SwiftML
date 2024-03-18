@@ -1,5 +1,5 @@
 import streamlit as st
-from unityml.constants import TEAM_MEMBERS
+from SwiftML.constants import TEAM_MEMBERS
 
 def team_members():
     st.markdown(f"<h1 style='text-align:center;'>Meet our dedicated team members</h1>", unsafe_allow_html=True)

@@ -1,7 +1,0 @@
-setuptools
-pycaret
-termcolor
-streamlit
-tqdm
-openpyxl
-streamlit-on-hover-tabs

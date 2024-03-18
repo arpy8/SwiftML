@@ -1,7 +1,10 @@
-/unityml.egg-info
-/unity-ml-test
-/dist
-/build
+SwiftML.egg-info/
+unity-ml-test/
+build/
+dist/
+__pycache__/
 
 logs.log
 testmodel123.pkl
+pypi
+SwiftML.egg-info

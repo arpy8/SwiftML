@@ -1,11 +1,11 @@
-# UnityML
-This repo contains the source code for the python package - UnityML.
+# SwiftML
+This repo contains the source code for the python package - SwiftML.
 
 - Command Prompt:
 ```
-pip install unityml && unityml
+pip install SwiftML && SwiftML
 ```
 - Powershell:
 ```
-pip install unityml ; unityml
+pip install SwiftML ; SwiftML
 ```

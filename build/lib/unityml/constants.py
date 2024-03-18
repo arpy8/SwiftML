@@ -1,4 +1,4 @@
-from unityml.utils import path_converter
+# from .utils import path_converter
 
 
 PORT = 825
@@ -15,7 +15,8 @@ Y8a.    .a8P  88       88  88    88,      `8b,d8'       88    `888'    88  88
                                            d8'                                          
 """
 
-LOGO_URL = path_converter("assets/banner.png")
+# LOGO_URL = path_converter("assets/banner.png")
+LOGO_URL = "assets/banner.png"
 
 PAGE_ICON = ""
 

@@ -1,11 +1,13 @@
 import streamlit as st
 from pycaret.regression import *
-from unityml.constants import MODELS_DICT
+from SwiftML.constants import MODELS_DICT
 
 INFO_COLOR = 'info'
 SUCCESS_COLOR = 'success'
 
-loading_blocks = ("▒"*8, "█"*8)
+# loading_blocks = ("▒"*8, "█"*8)
+block1 = "▒"*8
+block2 = "█"*8
 
 count1 = 8
 count2 = 0
@@ -31,7 +33,7 @@ def log_message(_temp_container, message, color):
     _temp_container.write(f"""
                             <b>{color.capitalize()}</b>: {message}
                             <br>
-                            <center><span style='color:{message_color}'>{loading_blocks[1]*count2}{loading_blocks[0]*count1}</span>{"&nbsp;"*5}{perc}%</center>
+                            <center><span style='color:{message_color}'>{block2*count2}{block1*count1}</span>{"&nbsp;"*5}{perc}%</center>
                         """, unsafe_allow_html=True)
 
 def setup_environment(_temp_container, data, y):
@@ -62,18 +64,28 @@ def build_and_evaluate_best_model(_temp_container, best_model):
         save_model_to_file(_temp_container, model, model_name)
         log_message(_temp_container, "Model saved successfully...", SUCCESS_COLOR)
         
+        count1 = 8
+        count2 = 0
+        
         return model
     
     else:
         log_message(_temp_container, "Model ID not found in the mapping.", "error")
+        
+        count1 = 8
+        count2 = 0
+        
         return None
 
 def save_model_to_file(_temp_container, model, model_name):
     save_model(model, "testmodel123")
     log_message(_temp_container, "Model saved successfully...", SUCCESS_COLOR)
 
-def best_regressor(_temp_container, data, y):
+def best_regressor(_temp_container, data, y, c1, c2):
     global count1, count2
+    count1 = c1
+    count2 = c2
+
     try:
         setup_environment(_temp_container, data, y)
         best_model = compare_and_get_best_model(_temp_container)

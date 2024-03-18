@@ -1,6 +1,6 @@
 import streamlit as st
 from pycaret.regression import *
-from unityml.constants import MODELS_DICT
+from SwiftML.constants import MODELS_DICT
 
 INFO_COLOR = 'info'
 SUCCESS_COLOR = 'success'
