@@ -37,4 +37,4 @@ setup(
     include_package_data=True,
     license="MIT",
     package_data={'SwiftML': ['*.png', '*.css', '*.csv', '*.html']},
-    )
+)

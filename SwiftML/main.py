@@ -7,12 +7,12 @@ from datetime import datetime
 from termcolor import colored
 
 try:
-    from SwiftML.utils import path_converter
-    from SwiftML.constants import ART, PORT
+    from SwiftML.__utils import path_convertor
+    from SwiftML.__constants import ART, PORT
 except ModuleNotFoundError:
-    from utils import path_converter
-    from constants import ART, PORT
-    
+    from __utils import path_convertor
+    from __constants import ART, PORT
+
 
 def boot_sequence():
     for _ in tqdm.tqdm(range(10), desc="Initializing boot sequence..."):
@@ -24,10 +24,11 @@ def boot_sequence():
     
     os.system('cls' if os.name == 'nt' else 'clear')
     print(chr(27)+'[2j')
-    print(f"{colored(ART, 'green')}\n{colored(f"[{datetime.now().strftime('%H:%M:%S')}] App started, http://localhost:{PORT}/", "blue")}")
+    curr_time = datetime.now().strftime("%H:%M:%S")
+    print(f"{colored(ART, 'green')}\n{colored(f'[{curr_time}] App started, http://localhost:{PORT}/', 'blue')}")
 
 def run_streamlit_app(PORT):
-    exe_path = path_converter('streamlit_app.py')
+    exe_path = path_convertor('__streamlit_app.py')
     command = ['streamlit', 'run' , exe_path, '--server.port', f'{PORT}']
     result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
     return result.stdout

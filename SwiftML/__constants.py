@@ -1,7 +1,7 @@
 try:
-    from SwiftML.utils import path_converter
+    from SwiftML.__utils import path_convertor
 except ModuleNotFoundError:
-    from utils import path_converter
+    from __utils import path_convertor
     
 
 PORT = 825
@@ -19,9 +19,7 @@ _____/\\\\\\\\\\\_____________________________________/\\\\\__________________/\
                                                                   
 """
 
-LOGO_URL = "assets/banner.png" if ModuleNotFoundError else path_converter("assets/banner.png")
-# LOGO_URL = "assets/banner.png"
-
+LOGO_URL = "assets/banner.png" if ModuleNotFoundError else path_convertor("assets/banner.png")
 PAGE_ICON = r"SwiftML\assets\img\logo-sq.png"
 
 TEAM_MEMBERS = [
@@ -29,29 +27,60 @@ TEAM_MEMBERS = [
     {"name": "Aditya Bhardwaj", "role": "Developer", "links":["https://www.linkedin.com/in/aditya-bhardwaj-3a6437232/", "https://github.com/adityabhardwajjj"]},
     {"name": "Harshit Jain", "role": "Developer", "links":["https://www.linkedin.com/in/harshitjainnn/", "https://github.com/HarshitJainn"]},
     {"name": "Anushka Singh", "role": "Developer", "links":["https://www.linkedin.com/in/harshitjainnn/", "https://github.com/HarshitJainn"]},
+    {"name": "Vijeta Srivastava", "role": "Developer", "links":["https://www.linkedin.com/in/vijeta-shrivastava-a8962a244/", ""]},
 ]
 
+
+EXCLUDED_MODELS = ['lightgbm', 'catboost', 'xgboost']
 MODELS_DICT = {
-    'LGBMRegressor':'lightgbm', 
-    'ExtraTreesRegressor':'et',
-    'RandomForestRegressor':'rt',
-    'GradientBoostingRegressor':'gbr',
-    'LinearRegression':'lr',
-    'Ridge':'ridge',
-    'Lasso':'lasso',
-    'ElasticNet':'en',
-    'LassoLars':'llar',
-    'BayesianRidge':'br',
-    'KNeighborsRegressor':'knn',
-    'HuberRegressor':'huber',
-    'Lars':'lar',
-    'AdaBoostRegressor':'ada',
-    'DecisionTreeRegressor':'dt',
-    'PassiveAggressiveRegressor':'par',
-    'OrthogonalMatchingPursuit':'omp',
-    'DummyRegressor':'dummy',
-    'CatBoostRegressor': 'catboost'
+    ## regressors
+    "LinearRegression":"lr",
+    "Lasso":"lasso",
+    "Ridge":"ridge",
+    "ElasticNet":"en",
+    "Lars":"lar",
+    "LassoLars":"llar",
+    "OrthogonalMatchingPursuit":"omp",
+    "BayesianRidge":"br",
+    "AutomaticRelevanceDetermination":"ard",
+    "PassiveAggressiveRegressor":"par",
+    "RandomSampleConsensus":"ransac",
+    "TheilSenRegressor":"tr",
+    "HuberRegressor":"huber",
+    "KernelRidge":"kr",
+    "SupportVectorRegressor":"svm",
+    "KNeighborsRegressor":"knn",
+    "DecisionTreeRegressor":"dt",
+    "RandomForestRegressor":"rf",
+    "ExtraTreesRegressor":"et",
+    "AdaBoostRegressor":"ada",
+    "GradientBoostingRegressor":"gbr",
+    "MLPRegressor":"mlp",
+    "DummyRegressor":"dr",
+    
+    ## classifiers
+    "LogisticRegression":"lr",
+    "KNeighborsClassifier":"knn",
+    "NaiveBayes":"nb",
+    "DecisionTreeClassifier":"dt",
+    "SVMLinearKernel":"svm",
+    "SVMRadialKernel":"rbfsvm",
+    "GaussianProcessClassifier":"gpc",
+    "MLPClassifier":"mlp",
+    "RidgeClassifier":"ridge",
+    "RandomForestClassifier":"rf",
+    "QuadraticDiscriminantAnalysis":"qda",
+    "AdaBoostClassifier":"ada",
+    "GradientBoostingClassifier":"gbc",
+    "LinearDiscriminantAnalysis":"lda",
+    "ExtraTreesClassifier":"et",
+    
+    # exclusions    
+    "ExtremeGradientBoosting":"xgboost",
+    "LGBMRegressor":"lightgbm",
+    "CatBoostRegressor":"catboost",
 }
 
-if __name__=="__main__":
-    print(ART)
+BACKGROUND = r"SwiftML\assets\img\bg.png"
+
+len(MODELS_DICT.keys())

@@ -1,10 +1,15 @@
-SwiftML.egg-info/
-unity-ml-test/
-build/
 dist/
+misc/
+build/
 __pycache__/
+unity-ml-test/
+*.egg-info/
+models/
+dataset/
 
-logs.log
-testmodel123.pkl
+*.pkl
 pypi
-SwiftML.egg-info
+logs.log
+raw_dataset
+profile-report.html
+.env
