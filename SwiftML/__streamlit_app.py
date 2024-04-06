@@ -75,7 +75,7 @@ with st.sidebar:
                         },
             },
         
-        key="1",
+        key="2",
         default_choice=0)
 
 
