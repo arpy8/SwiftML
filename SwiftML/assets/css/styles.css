@@ -18,13 +18,37 @@ section[data-testid='stFileUploaderDropzone'] {
     border-width: 200px;
 }
 
+div[data-testid="stDataFrameResizable"] * {
+    background-color: transparent;  
+}
+
 button[data-testid='baseButton-secondary'] {
     background-color: #ffffff05;
     backdrop-filter: blur(100px);
 }
 
+div[data-testid="stMultiSelect"] {
+    background-color: transparent;
+}
+
 .stSelectbox * {
     background-color: transparent;
+}
+
+div[data-baseweb="select"] *
+{
+    background-color: transparent;
+}
+
+span[data-baseweb="tag"]
+{
+    background-color: #ffffff05;
+    border: 1px solid #ffffff50;
+}
+
+div[data-baseweb="popover"] *
+{
+    background-color: transparent !important;
 }
 
 /* div[data-baseweb='popover'] * {

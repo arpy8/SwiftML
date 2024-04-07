@@ -3,16 +3,16 @@ import pandas as pd
 import streamlit as st
 from st_on_hover_tabs import on_hover_tabs
 
-try:
-    from SwiftML.__constants import *
-    from SwiftML.__utils import path_convertor
-    from SwiftML.__model_creation import process_dataset
-    from __constants import BACKGROUND
+# try:
+#     from SwiftML.__constants import *
+#     from SwiftML.__utils import path_convertor
+#     from SwiftML.__model_creation import process_dataset
+#     from __constants import BACKGROUND
 
-except ModuleNotFoundError:
-    from __utils import path_convertor
-    from __model_creation import process_dataset
-    from __constants import BACKGROUND
+# except ModuleNotFoundError:
+from __utils import path_convertor
+from __model_creation import process_dataset
+from __constants import BACKGROUND, PAGE_ICON
 
 
 st.set_page_config(page_title='SwiftML', page_icon=PAGE_ICON, layout='wide')
@@ -75,8 +75,8 @@ with st.sidebar:
                         },
             },
         
-        key="2",
-        default_choice=0)
+        key="1",
+        default_choice=1)
 
 
 if selected_task == 'Homepage':
@@ -91,40 +91,65 @@ elif selected_task == 'Process Data':
             </div>
              """, unsafe_allow_html=True)
     
-    # uploaded_file = r"C:\Users\arpit\My_PC\repos\SwiftML\SwiftML\assets\dataset\Iris.csv"
+    # uploaded_file = r"C:\Users\arpit\My_PC\repos\SwiftML\SwiftML\assets\dataset\onlinefoods.csv"
     uploaded_file = st.file_uploader('Please upload a dataset', type=['csv'])
+    dataset_option_columns = st.columns([2,2,3,1])
     
-    columns = st.columns([9,9,4])
-    
-    with columns[0]:
-        if uploaded_file:
-            uploaded_data = pd.read_csv(uploaded_file)
+    if uploaded_file is not None:
+        uploaded_data = pd.read_csv(uploaded_file)
+        
+        with st.expander("Preview Data", expanded=True):
+            with st.columns([1,100,1])[1]:
+                uploaded_data_container = st.empty()    
+                    
+        with dataset_option_columns[0]:
             st.write("##### Select Target Column")
-            target = st.selectbox('Select Target Column', uploaded_data.columns[::-1], label_visibility="hidden", disabled=st.session_state['disable_button'])
-    
-    with columns[1]:
-        if uploaded_file:
+            target = st.selectbox(
+                                label='Select Target Column', 
+                                options=uploaded_data.columns[::-1], 
+                                label_visibility="hidden", 
+                                disabled=st.session_state['disable_button']
+                            )
+        
+        with dataset_option_columns[1]:
             st.write("##### Select Target Type")
-            query = st.selectbox('Select Target Type', ["Regression", "Classification"], label_visibility="hidden", disabled=st.session_state['disable_button'])
-    
-    with columns[2]:
-        st.write("<br><br>", unsafe_allow_html=True)
-        submit_uploaded_file_container = st.empty()
-    
-    if uploaded_file is not None and submit_uploaded_file_container.button('Submit', use_container_width=True):
-        submit_uploaded_file_container.empty()
-        st.write("---")
+            target_type = st.selectbox(
+                                label='Select Target Type', 
+                                options=["Regression", "Classification"], 
+                                label_visibility="hidden", 
+                                disabled=st.session_state['disable_button']
+                            )
         
-        query = 'cls' if query == 'Classification' else 'reg' if query in ['Regression', 'Classification'] else None
+        with dataset_option_columns[2]:
+            st.write("##### Select Extra Columns")
+            extra_columns = st.multiselect(
+                                        label='Select Extra Columns', 
+                                        options=[i for i in uploaded_data.columns if i!=target], 
+                                        label_visibility="hidden",
+                                        disabled=st.session_state['disable_button'], 
+                                        placeholder="Select extra columns to drop"
+                                    )
+            uploaded_data.drop(extra_columns, axis=1, inplace=True)
+
+
+        with dataset_option_columns[3]:
+            st.write("<br><br>", unsafe_allow_html=True)
+            submit_uploaded_file_container = st.empty()
+            
+        uploaded_data_container.dataframe(uploaded_data, hide_index=True, width=2000)
         
-        try:
-            process_dataset(uploaded_data, target, query)
-                
-        except UnicodeDecodeError:
-            st.error('Error reading file: UnicodeDecodeError')
-        except Exception as e:
-            st.error('Error reading file: ' + str(e))
-        
+        if submit_uploaded_file_container.button(label='Submit', use_container_width=True):
+            submit_uploaded_file_container.empty()
+            st.write("---")
+            
+            try:
+                process_dataset(uploaded_data, target, target_type)
+                    
+            except UnicodeDecodeError:
+                st.error('Error reading file: UnicodeDecodeError')
+            except Exception as e:
+                st.error('Error reading file: ' + str(e))
+            
 elif selected_task == 'How to Use':
     with st.columns([1,4,1])[1]:
             st.write(open('SwiftML/html_components/doc.md', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)

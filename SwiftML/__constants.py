@@ -83,4 +83,27 @@ MODELS_DICT = {
 
 BACKGROUND = r"SwiftML\assets\img\bg.png"
 
-len(MODELS_DICT.keys())
+GEMINI_INSTRUCTIONS = """
+I am going to pass you a string. Your job is to write a single line pandas script to perform the task mentioned in the string. You can only use the pandas library. You have 2 minutes to complete the task.
+
+"""
+
+YDATA_PROFILE_REPORT_TEXT = """
+Profile report generated successfully for the given dataset successfully at 
+
+##### **{report_path}**
+
+---
+
+#### About Profile Reports
+
+A profile report is a concise document summarizing key information about an individual, group, or entity. It typically includes details such as background, demographics, interests, accomplishments, and other relevant data. Profile reports are commonly used in various fields such as journalism, marketing, and research to provide a comprehensive overview for decision-making purposes. They aim to offer insights into the subject's characteristics, preferences, and behaviors, aiding in understanding and engaging with them effectively.
+
+<br>
+"""
+
+if __name__ == "__main__":
+    import streamlit as st
+    st.write(YDATA_PROFILE_REPORT_TEXT.format(report_path="test"), unsafe_allow_html=True)
+    st.caption("Generated with the help of")
+    st.image("https://assets.ydata.ai/oss/ydata-profiling_red.png", width=70, )
