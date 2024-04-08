@@ -5,18 +5,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 class Predict(BaseModel):
+    model_id: str
     values: list
 
 pickle_path = "models/final_dumped_LinearDiscriminantAnalysis.pkl"
-
 app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return "blep"
+    return "Welcome to the SwiftML API!"
 
 @app.post("/predict")
 async def predict(values: Predict):
+    
     with open(pickle_path, 'rb') as file:
         params, model = pickle.load(file)
     

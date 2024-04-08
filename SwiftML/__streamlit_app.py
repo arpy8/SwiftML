@@ -47,9 +47,6 @@ with st.columns([3,3,1])[2]:
     st.write(open('SwiftML/html_components/logo.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/logo.html'), 'r').read(), unsafe_allow_html=True)
 
 with st.sidebar:
-    # with st.columns([1,10,1])[1]:
-    # st.image('SwiftML/assets/img/logo2.png')
-    
     st.write('<br><br>', unsafe_allow_html=True)
     selected_task = on_hover_tabs(
         tabName=['Homepage', 'Process Data', 'How to Use', 'Learn', 'About Us'],
@@ -74,16 +71,15 @@ with st.sidebar:
                         'margin-bottom': '30px',
                         },
             },
-        
         key="1",
         default_choice=1)
-
 
 if selected_task == 'Homepage':
     st.write(open('SwiftML/html_components/home.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/home.html'), "r").read(), unsafe_allow_html=True)
 
 elif selected_task == 'Process Data':
-    st.write("""
+    header_container = st.empty()
+    header_container.write("""
             <div style='text-align:center;'>
                 <h1 style='text-align:center; font-size: 300%;'>Process Data</h1>
                 <p style=' color: #9c9d9f'>Upload your dataset and watch us do the magic.</p>
@@ -91,12 +87,13 @@ elif selected_task == 'Process Data':
             </div>
              """, unsafe_allow_html=True)
     
-    # uploaded_file = r"C:\Users\arpit\My_PC\repos\SwiftML\SwiftML\assets\dataset\onlinefoods.csv"
     uploaded_file = st.file_uploader('Please upload a dataset', type=['csv'])
+    
     dataset_option_columns = st.columns([2,2,3,1])
     
     if uploaded_file is not None:
         uploaded_data = pd.read_csv(uploaded_file)
+        uploaded_file_name = uploaded_file.name
         
         with st.expander("Preview Data", expanded=True):
             with st.columns([1,100,1])[1]:
@@ -131,25 +128,27 @@ elif selected_task == 'Process Data':
                                     )
             uploaded_data.drop(extra_columns, axis=1, inplace=True)
 
-
         with dataset_option_columns[3]:
             st.write("<br><br>", unsafe_allow_html=True)
             submit_uploaded_file_container = st.empty()
             
-        uploaded_data_container.dataframe(uploaded_data, hide_index=True, width=2000)
+        _ = uploaded_data_container.dataframe(uploaded_data, hide_index=True, width=2000)
         
         if submit_uploaded_file_container.button(label='Submit', use_container_width=True):
-            submit_uploaded_file_container.empty()
+            _ = header_container.empty()
+            _ = submit_uploaded_file_container.empty()
+            
             st.write("---")
             
             try:
-                process_dataset(uploaded_data, target, target_type)
+                process_dataset(uploaded_data, target, target_type, uploaded_file_name)
                     
             except UnicodeDecodeError:
                 st.error('Error reading file: UnicodeDecodeError')
             except Exception as e:
                 st.error('Error reading file: ' + str(e))
             
+
 elif selected_task == 'How to Use':
     with st.columns([1,4,1])[1]:
             st.write(open('SwiftML/html_components/doc.md', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)

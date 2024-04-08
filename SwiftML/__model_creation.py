@@ -1,6 +1,5 @@
 import time
 import pickle
-import wikipedia
 import webbrowser
 import streamlit as st
 from ydata_profiling import ProfileReport
@@ -8,47 +7,95 @@ import pycaret.regression as pycaret_base_reg
 import pycaret.classification as pycaret_base_cls
 
 # try:
-#     from SwiftML.__constants import EXCLUDED_MODELS, MODELS_DICT
-#     from SwiftML.__utils import path_convertor
+# from SwiftML.__constants import EXCLUDED_MODELS, MODELS_DICT, README_TEXT_CONTENT
+# from SwiftML.__utils import path_convertor, generate_sha256, get_model_folder
 # except ModuleNotFoundError:
 
-from __utils import path_convertor
-from __constants import EXCLUDED_MODELS, MODELS_DICT, YDATA_PROFILE_REPORT_TEXT
+from __utils import path_convertor, generate_sha256, get_model_folder, get_model_info
+from __constants import EXCLUDED_MODELS, MODELS_DICT, README_TEXT_CONTENT, YDATA_PROFILE_REPORT_TEXT, PREDICTION_SCRIPT, ENCODING_IMPORTANT, PREDICT_FASTAPI_SCRIPT, API_REQUIREMENTS, API_README
+
+uploaded_csv_name = None
+pr = None
+profile_report = ""
+
 
 def generate_profile_report(data):
-    report_path = path_convertor('profile-report.html')
-    pr = ProfileReport(data, title='Profile Report')   
-    pr.to_file(report_path)
+    global pr
     
-    webbrowser.open(report_path)
-    return report_path
+    pr = ProfileReport(data, title='Profile Report')
+    return pr
 
-def get_model_info(model_name):
+def save_model_locally(params, model, X_test):
     try:
-        description = wikipedia.summary(model_name, sentences=4)
-        link = wikipedia.page(model_name).url
-        return description, link
-    except wikipedia.exceptions.PageError:
-        print(f"No Wikipedia page found for '{model_name}'")
-        return "No description found!", "No link found!"
-
-
-def save_model_locally(params, model, model_name="model/test_model"):
-    try:
-        with st.spinner("Saving the best model ..."):
+        with st.spinner("Saving the files ..."):
+            sha256_string = generate_sha256()
+            documents_dir = get_model_folder(uploaded_csv_name, model_name)
             pickle_content = [params, model]
-            file_name = f"models/final_dumped_{model_name}.pkl"
+
+            sha_model_name = f"{sha256_string}.pkl"
+
+            report_path = f"{documents_dir}/profile-report.html"
+            readme_path = f"{documents_dir}/README.txt"
+            model_path = f"{documents_dir}/{sha_model_name}"
+            predict_path = f"{documents_dir}/predict.py"
+
+            #### api dir
+            api_dir = f"{documents_dir}/api"
             
-            with open(file_name, "wb") as file:
+            fastapi_script_path = f"{api_dir}/app.py"
+            reqs_path = f"{api_dir}/requirements.txt"
+            api_readme_path = f"{api_dir}/README.txt"
+            
+            profile_report.to_file(report_path)
+            webbrowser.open(report_path)
+            
+            with open(model_path, "wb") as file:
                 pickle.dump(pickle_content, file)
                 
-            st.success(f"Model saved successfully at : {file_name}")
+            with open(readme_path, "wb") as file:
+                content = README_TEXT_CONTENT.format(sha256_string=sha256_string, params=params)
+                file.write(content.encode())
+                
+            with open(predict_path, "w") as file:
+                content = PREDICTION_SCRIPT.format(values=X_test, model_path=f"{documents_dir}/{sha_model_name}")
+                file.write(content)
+
+            # populating api dir
+            with open(f"{api_dir}/{sha_model_name}", "wb") as file:
+                pickle.dump(pickle_content, file)
+                
+            with open(fastapi_script_path, "w") as file:
+                content = PREDICT_FASTAPI_SCRIPT.format(model_path=sha_model_name, result_dict='{"prediction": prediction, "model": model.__class__.__name__}')
+                file.write(content)
+                
+            with open(reqs_path, "w") as file:
+                file.write(API_REQUIREMENTS)
+
+            with open(api_readme_path, "w") as file:
+                file.write(API_README)
+                
+
+            if any(isinstance(i, str) for i in X_test[0]):
+                st.warning("Please note that the feature variables contains categorical values. Make sure to encode these values before making predictions. For more information, check the `IMPORTANT.md` file.")
+                
+                with open(f"{documents_dir}/IMPORTANT.md", "w") as file:
+                    file.write(ENCODING_IMPORTANT)
+                
+        st.success(f"""
+                    Model files saved successfully at:
+
+                    `{documents_dir}`
+                """)
+
+        return model_path
         
     except Exception as e:
         st.error("An error occurred while saving the model: " + str(e))
 
-def build_and_evaluate_best_model(pycaret_base, params, best_model):
-    try:
+def build_and_evaluate_best_model(pycaret_base, params, best_model, X_test):
+        global model_name
+    
+    # try:
         model_name = type(best_model).__name__
         model_id = MODELS_DICT.get(model_name, None)
 
@@ -82,31 +129,34 @@ For more details, check out the following link:<br>
             # with st.expander("Model plots", expanded=False):
             #     st.image("AUC.png")
             
-            save_model_locally(params, model, model_name)
+            _ = save_model_locally(params, model, X_test)
+            
             return model
 
         else:
             st.error("Woops, couldn't find a valid model for this one!")
     
-    except Exception as e:
-        st.error("An error occurred while building and evaluating the best model: " + str(e))
+    # except Exception as e:
+        # st.error("An error occurred while building and evaluating the best model: " + str(e))
     
 def find_best_model(pycaret_base, data, y):
+    global profile_report
+    
     try:
         with st.spinner("Generating Profile Report ..."):
-            report_path = generate_profile_report(data)
-            st.toast("Profile Report generated successfully!")
+            profile_report = generate_profile_report(data)
         
         with st.expander("Profile Report details", expanded=False):
-            st.write(YDATA_PROFILE_REPORT_TEXT.format(report_path=report_path), unsafe_allow_html=True)
+            st.write(YDATA_PROFILE_REPORT_TEXT, unsafe_allow_html=True)
             st.caption("Generated with the help of")
             st.image("https://assets.ydata.ai/oss/ydata-profiling_red.png", width=70, )
             
         with st.spinner("Setting up the enviroment ..."):
             pycaret_base.setup(data, target=y)
             params = pycaret_base.get_config("X_train").columns
+            X_test = pycaret_base.get_config("X_test").head(1).values.tolist()
         
-        with st.expander("Environment details", expanded=False):
+        with st.expander("Environment details", expanded=True):
             st.code(pycaret_base.pull())
 
         with st.spinner("Comparing different models ..."):
@@ -114,15 +164,19 @@ def find_best_model(pycaret_base, data, y):
         with st.expander("Model Comparision", expanded=True):
             st.code(pycaret_base.pull())
             
-        if best_model is not None:  
-            return build_and_evaluate_best_model(pycaret_base, params, best_model)
+        if best_model is not None:
+            return build_and_evaluate_best_model(pycaret_base, params, best_model, X_test)
 
         return None
 
     except Exception as e:
         st.error("An error occurred while finding the best model: " + str(e))
 
-def process_dataset(data, target, query):
+def process_dataset(data, target, query, uploaded_file_name):
+    
+    global uploaded_csv_name
+    uploaded_csv_name = uploaded_file_name
+    
     try:
         pycaret_base = pycaret_base_cls if query == 'Classification' else pycaret_base_reg if query in ['Regression', 'Classification'] else None
         start_time = time.time()
