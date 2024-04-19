@@ -1,7 +1,20 @@
-/unityml.egg-info
-/unity-ml-test
-/dist
-/build
+.venv/
+dist/
+misc/
+build/
+__pycache__/
+unity-ml-test/
+*.egg-info/
+models/
+dataset/
+api/
 
+*.pkl
+pypi
 logs.log
-testmodel123.pkl
+raw_dataset
+profile-report.html
+.env
+auto.py
+ToDo
+dataset_info.py

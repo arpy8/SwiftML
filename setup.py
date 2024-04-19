@@ -4,27 +4,29 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="unityml",
-    version="0.0.1",
+    name="SwiftML",
+    version="0.1.0",
     author="Arpit Sengar (arpy8)",
     author_email="arpitsengar99@gmail.com",
-    description="This package lauches the web app locally for unityml.",
+    description="A tool to automate end-to-end machine learning model development and deployment with high level of abstraction.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/arpy8/unityml",
+    url="https://github.com/arpy8/SwiftML",
     packages=find_packages(),
     install_requires=[
         "setuptools",
-        "pycaret",
-        "termcolor",
-        "streamlit",
-        "tqdm",
         "openpyxl",
-        "streamlit-on-hover-tabs"
+        "scikit-learn",
+        "pycaret",
+        "phik",
+        "streamlit-on-hover-tabs",
+        "streamlit_custom_ydata_profiling",
+        "tqdm",
+        "termcolor",
     ],
     entry_points={
         "console_scripts": [
-            "unityml=unityml.main:main",
+            "swiftml=SwiftML.main:main",
         ],
     },
     classifiers=[
@@ -34,5 +36,5 @@ setup(
     ],
     include_package_data=True,
     license="MIT",
-    package_data={'unityml': ['*.png', '*.css', '*.csv', '*.html']}, 
+    package_data={'SwiftML': ['*.png', '*.css', '*.csv', '*.html']},
 )
