@@ -49,8 +49,8 @@ with st.columns([3,3,1])[2]:
 with st.sidebar:
     st.write('<br><br>', unsafe_allow_html=True)
     selected_task = on_hover_tabs(
-        tabName=['Homepage', 'Process Data', 'How to Use', 'Learn', 'About Us'],
-        iconName=['home', 'engineering', 'info','school', 'contact_support'],
+        tabName=['Homepage', 'Process Data', 'Learn', 'About Us'],
+        iconName=['home', 'engineering', 'school', 'contact_support'],
         styles = {
             'navtab': {'background-color':'#ffffff',
                         'color': '#ff0290',
@@ -72,7 +72,7 @@ with st.sidebar:
                         },
             },
         key="1",
-        default_choice=1)
+        default_choice=0)
 
 if selected_task == 'Homepage':
     st.write(open('SwiftML/html_components/home.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/home.html'), "r").read(), unsafe_allow_html=True)
@@ -148,10 +148,6 @@ elif selected_task == 'Process Data':
             except Exception as e:
                 st.error('Error reading file: ' + str(e))
             
-
-elif selected_task == 'How to Use':
-    with st.columns([1,4,1])[1]:
-            st.write(open('SwiftML/html_components/doc.md', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)
 
 elif selected_task == 'Learn':
     with st.columns([1,4,1])[1]:

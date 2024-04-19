@@ -20,7 +20,7 @@ _____/\\\\\\\\\\\_____________________________________/\\\\\__________________/\
                                                                   
 """
 
-LOGO_URL = "assets/banner.png" if ModuleNotFoundError else path_convertor("assets/banner.png")
+LOGO_URL = path_convertor("assets/banner.png")
 PAGE_ICON = r"SwiftML\assets\img\logo-sq.png"
 
 TEAM_MEMBERS = [
@@ -116,8 +116,6 @@ You can use this pickle file to load your model in the future. Make sure to keep
 
 
 For any queries, mail me at arpitsengar99@gmail.com
-
-Thanks for using SwiftML!
 """
 
 PREDICTION_SCRIPT = """

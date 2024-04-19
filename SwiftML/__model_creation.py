@@ -11,12 +11,12 @@ import pycaret.classification as pycaret_base_cls
 # from SwiftML.__utils import path_convertor, generate_sha256, get_model_folder
 # except ModuleNotFoundError:
 
-from __utils import path_convertor, generate_sha256, get_model_folder, get_model_info
+from __utils import generate_sha256, get_model_folder, get_model_info
 from __constants import EXCLUDED_MODELS, MODELS_DICT, README_TEXT_CONTENT, YDATA_PROFILE_REPORT_TEXT, PREDICTION_SCRIPT, ENCODING_IMPORTANT, PREDICT_FASTAPI_SCRIPT, API_REQUIREMENTS, API_README
 
-uploaded_csv_name = None
 pr = None
 profile_report = ""
+uploaded_csv_name = None
 
 
 def generate_profile_report(data):
@@ -25,7 +25,10 @@ def generate_profile_report(data):
     pr = ProfileReport(data, title='Profile Report')
     return pr
 
-def save_model_locally(params, model, X_test):
+def create_model_api(pycare_base, model, api_path):
+    return pycare_base.create_api(model, api_path)
+
+def save_model_locally(pycaret_base, params, model, X_test):
     try:
         with st.spinner("Saving the files ..."):
             sha256_string = generate_sha256()
@@ -43,6 +46,8 @@ def save_model_locally(params, model, X_test):
             api_dir = f"{documents_dir}/api"
             
             fastapi_script_path = f"{api_dir}/app.py"
+            fastapi_script_path2 = f"{api_dir}/app_pycaret"
+            
             reqs_path = f"{api_dir}/requirements.txt"
             api_readme_path = f"{api_dir}/README.txt"
             
@@ -87,6 +92,8 @@ def save_model_locally(params, model, X_test):
                     `{documents_dir}`
                 """)
 
+        _ = create_model_api(pycaret_base, model, fastapi_script_path2)
+        
         return model_path
         
     except Exception as e:
@@ -129,7 +136,7 @@ For more details, check out the following link:<br>
             # with st.expander("Model plots", expanded=False):
             #     st.image("AUC.png")
             
-            _ = save_model_locally(params, model, X_test)
+            _ = save_model_locally(pycaret_base, params, model, X_test)
             
             return model
 
