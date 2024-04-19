@@ -1,18 +1,10 @@
+
 import base64
 import pandas as pd
 import streamlit as st
 from st_on_hover_tabs import on_hover_tabs
 
-# try:
-#     from SwiftML.__constants import *
-#     from SwiftML.__utils import path_convertor
-#     from SwiftML.__model_creation import process_dataset
-#     from __constants import BACKGROUND
-
-# except ModuleNotFoundError:
-from __utils import path_convertor
-from __model_creation import process_dataset
-from __constants import BACKGROUND, PAGE_ICON
+from constants import BACKGROUND, PAGE_ICON
 
 
 st.set_page_config(page_title='SwiftML', page_icon=PAGE_ICON, layout='wide')
@@ -36,7 +28,7 @@ def set_page_background(png_file):
             }}
         </style>
     '''.format(
-        header_css=open('SwiftML/assets/css/styles.css').read() if ModuleNotFoundError else open(path_convertor('assets/css/styles.css')).read(),
+        header_css=open('assets/css/styles.css').read(),
         bin_str=bin_str
     )
     st.markdown(page_bg_img, unsafe_allow_html=True)
@@ -44,7 +36,7 @@ def set_page_background(png_file):
 set_page_background(BACKGROUND)
 
 with st.columns([3,3,1])[2]:
-    st.write(open('SwiftML/html_components/logo.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/logo.html'), 'r').read(), unsafe_allow_html=True)
+    st.write(open('assets/html_components/logo.html', 'r').read(), unsafe_allow_html=True)
 
 with st.sidebar:
     st.write('<br><br>', unsafe_allow_html=True)
@@ -75,7 +67,7 @@ with st.sidebar:
         default_choice=0)
 
 if selected_task == 'Homepage':
-    st.write(open('SwiftML/html_components/home.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/home.html'), "r").read(), unsafe_allow_html=True)
+    st.write(open('assets/html_components/home.html', 'r').read(), unsafe_allow_html=True)
 
 elif selected_task == 'Process Data':
     header_container = st.empty()
@@ -141,7 +133,8 @@ elif selected_task == 'Process Data':
             st.write("---")
             
             try:
-                process_dataset(uploaded_data, target, target_type, uploaded_file_name)
+                st.info(f"{uploaded_data, target, target_type, uploaded_file_name}")
+                # process_dataset(uploaded_data, target, target_type, uploaded_file_name)
                     
             except UnicodeDecodeError:
                 st.error('Error reading file: UnicodeDecodeError')
@@ -151,9 +144,9 @@ elif selected_task == 'Process Data':
 
 elif selected_task == 'Learn':
     with st.columns([1,4,1])[1]:
-        st.write(open('SwiftML/html_components/learn.md', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)
+        st.write(open('assets/html_components/learn.md', 'r').read(), unsafe_allow_html=True)
 
 elif selected_task == 'About Us':
     with st.columns([1,4,1])[1]:
-        st.write(open('SwiftML/html_components/about.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)
-    st.write(open('SwiftML/html_components/team.html', 'r').read() if ModuleNotFoundError else open(path_convertor('html_components/about.html'), "r").read(), unsafe_allow_html=True)
+        st.write(open('assets/html_components/about.html', 'r').read(), unsafe_allow_html=True)
+    st.write(open('assets/html_components/team.html', 'r').read(), unsafe_allow_html=True)

@@ -10,7 +10,7 @@ from datetime import datetime
 try:
     from SwiftML.__constants import MODEL_NAME_INFO
 except ImportError:
-    from __constants import MODEL_NAME_INFO
+    from constants import MODEL_NAME_INFO
     
 
 def stop_streamlit_app():
