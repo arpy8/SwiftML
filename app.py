@@ -1,10 +1,11 @@
-
+import os
 import base64
 import pandas as pd
 import streamlit as st
 from st_on_hover_tabs import on_hover_tabs
 
 from constants import BACKGROUND, PAGE_ICON
+from process_response import call_backend_api, display_response
 
 
 st.set_page_config(page_title='SwiftML', page_icon=PAGE_ICON, layout='wide')
@@ -64,7 +65,7 @@ with st.sidebar:
                         },
             },
         key="1",
-        default_choice=0)
+        default_choice=1)
 
 if selected_task == 'Homepage':
     st.write(open('assets/html_components/home.html', 'r').read(), unsafe_allow_html=True)
@@ -80,16 +81,14 @@ elif selected_task == 'Process Data':
              """, unsafe_allow_html=True)
     
     uploaded_file = st.file_uploader('Please upload a dataset', type=['csv'])
-    
     dataset_option_columns = st.columns([2,2,3,1])
     
     if uploaded_file is not None:
         uploaded_data = pd.read_csv(uploaded_file)
-        uploaded_file_name = uploaded_file.name
         
-        with st.expander("Preview Data", expanded=True):
+        with st.expander("Preview Data", expanded=False):
             with st.columns([1,100,1])[1]:
-                uploaded_data_container = st.empty()    
+                uploaded_data_container = st.empty()
                     
         with dataset_option_columns[0]:
             st.write("##### Select Target Column")
@@ -102,7 +101,7 @@ elif selected_task == 'Process Data':
         
         with dataset_option_columns[1]:
             st.write("##### Select Target Type")
-            target_type = st.selectbox(
+            problem_type = st.selectbox(
                                 label='Select Target Type', 
                                 options=["Regression", "Classification"], 
                                 label_visibility="hidden", 
@@ -111,14 +110,14 @@ elif selected_task == 'Process Data':
         
         with dataset_option_columns[2]:
             st.write("##### Select Extra Columns")
-            extra_columns = st.multiselect(
-                                        label='Select Extra Columns', 
-                                        options=[i for i in uploaded_data.columns if i!=target], 
-                                        label_visibility="hidden",
-                                        disabled=st.session_state['disable_button'], 
-                                        placeholder="Select extra columns to drop"
-                                    )
-            uploaded_data.drop(extra_columns, axis=1, inplace=True)
+            metadata_columns = st.multiselect(
+                                    label='Select Extra Columns', 
+                                    options=[i for i in uploaded_data.columns if i!=target], 
+                                    label_visibility="hidden",
+                                    disabled=st.session_state['disable_button'], 
+                                    placeholder="Select extra columns to drop"
+                                )
+            uploaded_data.drop(metadata_columns, axis=1, inplace=True)
 
         with dataset_option_columns[3]:
             st.write("<br><br>", unsafe_allow_html=True)
@@ -132,14 +131,29 @@ elif selected_task == 'Process Data':
             
             st.write("---")
             
+            uploaded_data.to_csv('temp_data.csv', index=False)
+
+            
             try:
-                st.info(f"{uploaded_data, target, target_type, uploaded_file_name}")
-                # process_dataset(uploaded_data, target, target_type, uploaded_file_name)
-                    
-            except UnicodeDecodeError:
+                with st.spinner("Processing data..."):
+                    response = call_backend_api(target, problem_type.lower())
+                
+                if type(response) == dict:
+                    try:
+                        display_response(response)
+                    except KeyError:
+                        st.error(response)
+                else:
+                    st.error(response)
+                
+                os.remove('temp_data.csv')
+                
+                _ = submit_uploaded_file_container.button(label='Submit', use_container_width=True, key='submit_button2')
+
+            except UnicodeDecodeError:  
                 st.error('Error reading file: UnicodeDecodeError')
-            except Exception as e:
-                st.error('Error reading file: ' + str(e))
+            # except Exception as e:
+            #     st.error('Error reading file: ' + str(e)) 
             
 
 elif selected_task == 'Learn':
