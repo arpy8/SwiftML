@@ -84,7 +84,7 @@ elif selected_task == 'Process Data':
     dataset_option_columns = st.columns([2,2,3,1])
     
     if uploaded_file is not None:
-        uploaded_data = pd.read_csv(uploaded_file)
+        uploaded_data_df = pd.read_csv(uploaded_file)
         
         with st.expander("Preview Data", expanded=False):
             with st.columns([1,100,1])[1]:
@@ -94,7 +94,7 @@ elif selected_task == 'Process Data':
             st.write("##### Select Target Column")
             target = st.selectbox(
                                 label='Select Target Column', 
-                                options=uploaded_data.columns[::-1], 
+                                options=uploaded_data_df.columns[::-1], 
                                 label_visibility="hidden", 
                                 disabled=st.session_state['disable_button']
                             )
@@ -112,18 +112,18 @@ elif selected_task == 'Process Data':
             st.write("##### Select Extra Columns")
             metadata_columns = st.multiselect(
                                     label='Select Extra Columns', 
-                                    options=[i for i in uploaded_data.columns if i!=target], 
+                                    options=[i for i in uploaded_data_df.columns if i!=target], 
                                     label_visibility="hidden",
                                     disabled=st.session_state['disable_button'], 
                                     placeholder="Select extra columns to drop"
                                 )
-            uploaded_data.drop(metadata_columns, axis=1, inplace=True)
+            uploaded_data_df.drop(metadata_columns, axis=1, inplace=True)
 
         with dataset_option_columns[3]:
             st.write("<br><br>", unsafe_allow_html=True)
             submit_uploaded_file_container = st.empty()
             
-        _ = uploaded_data_container.dataframe(uploaded_data, hide_index=True, width=2000)
+        _ = uploaded_data_container.dataframe(uploaded_data_df, hide_index=True, width=2000)
         
         if submit_uploaded_file_container.button(label='Submit', use_container_width=True):
             _ = header_container.empty()
@@ -131,12 +131,11 @@ elif selected_task == 'Process Data':
             
             st.write("---")
             
-            uploaded_data.to_csv('temp_data.csv', index=False)
+            uploaded_data_df.to_csv('temp_data.csv', index=False)
 
-            
             try:
                 with st.spinner("Processing data..."):
-                    response = call_backend_api(target, problem_type.lower())
+                    response = call_backend_api(uploaded_data_df, target, problem_type.lower())
                 
                 if type(response) == dict:
                     try:

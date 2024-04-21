@@ -9,3 +9,60 @@ TEAM_MEMBERS = [
     {"name": "Anushka Singh", "role": "Developer", "links":["https://www.linkedin.com/in/harshitjainnn/", "https://github.com/HarshitJainn"]},
     {"name": "Vijeta Srivastava", "role": "Developer", "links":["https://www.linkedin.com/in/vijeta-shrivastava-a8962a244/", ""]},
 ]
+
+EXCLUDED_MODELS = ['lightgbm', 'catboost', 'xgboost']
+MODELS_DICT = {
+    ## regressors
+    "LinearRegression":"lr",
+    "Lasso":"lasso",
+    "Ridge":"ridge",
+    "ElasticNet":"en",
+    "Lars":"lar",
+    "LassoLars":"llar",
+    "OrthogonalMatchingPursuit":"omp",
+    "BayesianRidge":"br",
+    "AutomaticRelevanceDetermination":"ard",
+    "PassiveAggressiveRegressor":"par",
+    "RandomSampleConsensus":"ransac",
+    "TheilSenRegressor":"tr",
+    "HuberRegressor":"huber",
+    "KernelRidge":"kr",
+    "SupportVectorRegressor":"svm",
+    "KNeighborsRegressor":"knn",
+    "DecisionTreeRegressor":"dt",
+    "RandomForestRegressor":"rf",
+    "ExtraTreesRegressor":"et",
+    "AdaBoostRegressor":"ada",
+    "GradientBoostingRegressor":"gbr",
+    "MLPRegressor":"mlp",
+    "DummyRegressor":"dr",
+    
+    ## classifiers
+    "LogisticRegression":"lr",
+    "KNeighborsClassifier":"knn",
+    "NaiveBayes":"nb",
+    "DecisionTreeClassifier":"dt",
+    "SVMLinearKernel":"svm",
+    "SVMRadialKernel":"rbfsvm",
+    "GaussianProcessClassifier":"gpc",
+    "MLPClassifier":"mlp",
+    "RidgeClassifier":"ridge",
+    "RandomForestClassifier":"rf",
+    "QuadraticDiscriminantAnalysis":"qda",
+    "AdaBoostClassifier":"ada",
+    "GradientBoostingClassifier":"gbc",
+    "LinearDiscriminantAnalysis":"lda",
+    "ExtraTreesClassifier":"et",
+    
+    # exclusions    
+    "ExtremeGradientBoosting":"xgboost",
+    "LGBMRegressor":"lightgbm",
+    "CatBoostRegressor":"catboost",
+}
+
+MODEL_NAME_INFO = {
+    "RandomForestClassifier": ["A random forest is a meta estimator that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. Trees in the forest use the best split strategy, i.e. equivalent to passing splitter='best' to the underlying DecisionTreeRegressor. The sub-sample size is controlled with the max_samples parameter if bootstrap=True (default), otherwise the whole dataset is used to build each tree.", 
+                               "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html"],
+    "ExtraTreesClassifier": ["An extra-trees classifier is a meta estimator that fits a number of randomized decision trees (a.k.a. extra-trees) on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. The sub-sample size is controlled with the max_samples parameter if bootstrap=True (default), otherwise the whole dataset is used to build each tree.", 
+                             "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html"]
+}

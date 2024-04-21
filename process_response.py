@@ -1,35 +1,103 @@
-import json
-import requests
+import time
 import streamlit as st
+from termcolor import colored
+# from ydata_profiling import ProfileReport
+import pycaret.regression as pycaret_base_reg
+import pycaret.classification as pycaret_base_cls
 
-# API_ENDPOINT = 'https://swiftml-backend.onrender.com/upload/'
-API_ENDPOINT = 'http://localhost:8000/upload/'
+from constants import MODELS_DICT, EXCLUDED_MODELS
+from utils import get_model_info    
 
-def call_backend_api(target, problem_type):
-    uploaded_file = 'temp_data.csv'
-    print(target, problem_type)
+
+def process_dataset_inner_function(pycaret_base, data, y):
+    try:
+        # profile_report = generate_profile_report(data)
+        # print(YDATA_PROFILE_REPORT_TEXT, unsafe_allow_html=True)
+            
+        _ = pycaret_base.setup(data, target=y)
+        environment_details_data = pycaret_base.pull()
+ 
+        X_train_columns = pycaret_base.get_config("X_train").columns
+        X_test = pycaret_base.get_config("X_test").head(1).values.tolist()
+        
+        best_model = pycaret_base.compare_models(exclude=EXCLUDED_MODELS)
+        model_comparision_data = pycaret_base.pull()
+            
+        if best_model is not None:
+            try:
+                model_name = type(best_model).__name__
+                print(f"Best model: {model_name}")
+                
+                model_id = MODELS_DICT.get(model_name, None)
+                model_definition, model_info_links = get_model_info(model_name)
+
+                if model_id is not None:
+                    final_created_model = pycaret_base.create_model(model_id)
+                    _ = pycaret_base.tune_model(final_created_model)
+                    _ = pycaret_base.evaluate_model(final_created_model)
+                    
+                    model_evaluation_data = pycaret_base.pull()
+
+                    serialized_model = {
+                        "model_name": model_name,
+                        "final_model": str(final_created_model),     
+                        "model_definition": model_definition,
+                        "model_info_links": model_info_links,
+                        "environment_details_data": str(environment_details_data),
+                        "model_comparision_data": str(model_comparision_data),
+                        "model_evaluation_data": str(model_evaluation_data),
+                    }
+                    
+                    return serialized_model
+
+                else:
+                    return "Woops, couldn't find a valid model for this one!"
+            
+            except Exception as e:
+                return f"An error occurred while building and evaluating the best model: {str(e)}"
+        
+    except Exception as e:
+        return f"An error occurred while finding the best model: {str(e)}"
     
-    form_data = {
-        'target_variable': target,
-        'problem_type': problem_type,
-    }
 
-    files = {'file': open(uploaded_file, 'rb')}
+def process_dataset(data, target, problem_type):
+    try:
+        pycaret_base = pycaret_base_cls if problem_type == 'classification' else pycaret_base_reg if problem_type in ['regression', 'classification'] else None
+        start_time = time.time()
+        print(f"Processing dataset for {problem_type}...")
+        all_info = process_dataset_inner_function(pycaret_base=pycaret_base,
+                            data=data,
+                            y=target
+                        )
+            
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        
+        return {
+            "summary": all_info,
+            "elapsed_time": elapsed_time
+        }
 
-    # try:  
-    print("process started")
-    response = requests.post(API_ENDPOINT, files=files, data=form_data)
-    print("process finished")
-    print("response", response.text)
-
-    if response.status_code == 200:
-        return json.loads(response.text)
+    except Exception as e:
+        return f"An error occurred while processing the dataset: {str(e)}"
     
-    else:
-        return f"Failed to upload file. Status code: {response.status_code}" 
 
-    # except Exception as e:
-    #     return f"An error occurred: {e}"
+def call_backend_api(uploaded_data_df, target_variable, problem_type):
+    try:
+        print(colored(f"Processing dataset for {problem_type}...", "green"))
+        uploaded_dataset_df = uploaded_data_df
+
+        print(colored(f"target_variable variable: {target_variable}", "green"))
+        if target_variable not in uploaded_dataset_df.columns:
+            return {"error": f"target_variable column '{target_variable}' not found in the uploaded dataset!"}
+
+        process_dataset_response = process_dataset(uploaded_dataset_df, target_variable, problem_type)
+        print(colored(process_dataset_response, "green"))
+        
+        return process_dataset_response
+
+    except Exception as e:
+        return f"An error occurred: {e}"
         
     
 def display_response(response: dict) -> None:
