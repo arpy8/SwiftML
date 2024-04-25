@@ -42,8 +42,8 @@ with st.columns([3,3,1])[2]:
 with st.sidebar:
     st.write('<br><br>', unsafe_allow_html=True)
     selected_task = on_hover_tabs(
-        tabName=['Homepage', 'Process Data', 'Learn', 'About Us'],
-        iconName=['home', 'engineering', 'school', 'contact_support'],
+        tabName=['Homepage', 'Process Data', 'Predict Values', 'Learn ML', 'About Us'],
+        iconName=['home', 'engineering', 'lightbulb', 'school', 'contact_support'],
         styles = {
             'navtab': {'background-color':'#ffffff',
                         'color': '#ff0290',
@@ -139,7 +139,12 @@ elif selected_task == 'Process Data':
                 
                 if type(response) == dict:
                     try:
-                        display_response(response)
+                        if 'data' not in st.session_state:
+                            st.session_state['uploaded_data_df'] = uploaded_data_df
+                        if 'model_info' not in st.session_state:
+                            st.session_state['model_info'] = response
+                        _ = display_response(response)
+
                     except KeyError:
                         st.error(response)
                 else:
@@ -153,7 +158,24 @@ elif selected_task == 'Process Data':
                 st.error('Error reading file: UnicodeDecodeError')
             # except Exception as e:
             #     st.error('Error reading file: ' + str(e)) 
+    else:
+        if 'model_info' and 'uploaded_data_df' in st.session_state:
+            model_data = st.session_state['model_info']
+            uploaded_data_df = st.session_state['uploaded_data_df']
             
+            with st.expander("Preview Data", expanded=False):
+                with st.columns([1,100,1])[1]:
+                    st.dataframe(uploaded_data_df)
+                    
+            _ = display_response(model_data)
+
+
+elif selected_task == 'Predict Values':
+    if 'pycaret_model' in st.session_state:
+        st.write(open('assets/html_components/predict.html', 'r').read(), unsafe_allow_html=True)
+    else:
+        st.write(open('assets/html_components/predict.html', 'r').read(), unsafe_allow_html=True)
+        st.error("Please process data first to predict values.")
 
 elif selected_task == 'Learn':
     with st.columns([1,4,1])[1]:

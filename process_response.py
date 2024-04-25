@@ -5,8 +5,8 @@ from termcolor import colored
 import pycaret.regression as pycaret_base_reg
 import pycaret.classification as pycaret_base_cls
 
+from utils import get_model_info
 from constants import MODELS_DICT, EXCLUDED_MODELS
-from utils import get_model_info    
 
 
 def process_dataset_inner_function(pycaret_base, data, y):
@@ -40,7 +40,7 @@ def process_dataset_inner_function(pycaret_base, data, y):
 
                     serialized_model = {
                         "model_name": model_name,
-                        "final_model": str(final_created_model),     
+                        "final_model": str(final_created_model),
                         "model_definition": model_definition,
                         "model_info_links": model_info_links,
                         "environment_details_data": str(environment_details_data),
