@@ -1,21 +1,10 @@
 .venv/
-dist/
 misc/
-build/
 __pycache__/
-unity-ml-test/
-*.egg-info/
-models/
-dataset/
-api/
 
-*.pkl
-pypi
 logs.log
-raw_dataset
-profile-report.html
 .env
-auto.py
 ToDo
-dataset_info.py
-temp_data.csv
+dl.py
+run.bat
+install.bat
