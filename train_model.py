@@ -1,4 +1,3 @@
-import time
 import streamlit as st
 from termcolor import colored
 # from ydata_profiling import ProfileReport
@@ -45,10 +44,10 @@ def process_dataset_inner_function(pycaret_base, data, y):
                         "model_info_links": model_info_links,
                         "environment_details_data": str(environment_details_data),
                         "model_comparision_data": str(model_comparision_data),
-                        "model_evaluation_data": str(model_evaluation_data),
+                        "model_evaluation_data": str(model_evaluation_data),                      
                     }
                     
-                    return serialized_model
+                    return serialized_model, best_model, X_train_columns
 
                 else:
                     return "Woops, couldn't find a valid model for this one!"
@@ -63,20 +62,14 @@ def process_dataset_inner_function(pycaret_base, data, y):
 def process_dataset(data, target, problem_type):
     try:
         pycaret_base = pycaret_base_cls if problem_type == 'classification' else pycaret_base_reg if problem_type in ['regression', 'classification'] else None
-        start_time = time.time()
         print(f"Processing dataset for {problem_type}...")
-        all_info = process_dataset_inner_function(pycaret_base=pycaret_base,
+        
+        all_info, best_model, X_columns = process_dataset_inner_function(pycaret_base=pycaret_base,
                             data=data,
                             y=target
                         )
             
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        
-        return {
-            "summary": all_info,
-            "elapsed_time": elapsed_time
-        }
+        return {"summary": all_info}, best_model, X_columns
 
     except Exception as e:
         return f"An error occurred while processing the dataset: {str(e)}"
@@ -85,19 +78,18 @@ def process_dataset(data, target, problem_type):
 def call_backend_api(uploaded_data_df, target_variable, problem_type):
     try:
         print(colored(f"Processing dataset for {problem_type}...", "green"))
-        uploaded_dataset_df = uploaded_data_df
-
         print(colored(f"target_variable variable: {target_variable}", "green"))
-        if target_variable not in uploaded_dataset_df.columns:
+
+        if target_variable not in uploaded_data_df.columns:
             return {"error": f"target_variable column '{target_variable}' not found in the uploaded dataset!"}
 
-        process_dataset_response = process_dataset(uploaded_dataset_df, target_variable, problem_type)
+        process_dataset_response, best_model, X_columns = process_dataset(uploaded_data_df, target_variable, problem_type)
         print(colored(process_dataset_response, "green"))
         
-        return process_dataset_response
+        return process_dataset_response, X_columns, pycaret_base_cls if problem_type == 'classification' else pycaret_base_reg if problem_type in ['regression', 'classification'] else None, best_model
 
     except Exception as e:
-        return f"An error occurred: {e}"
+        return f"An error occurred: {e}", False, False, False
         
     
 def display_response(response: dict) -> None:
@@ -131,8 +123,6 @@ For more details, check out the following link:<br>
         
     except Exception as e: 
         st.error(response)
-    
-    st.toast(f"Process finished in {round(float(response['elapsed_time']), 2)} seconds.", icon="✅")
     
 if __name__ == "__main__":
     call_backend_api("misc/Iris.csv", "Species", "classification", ["Id"])
