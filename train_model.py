@@ -1,128 +1,119 @@
+import pandas as pd
 import streamlit as st
-from termcolor import colored
 # from ydata_profiling import ProfileReport
 import pycaret.regression as pycaret_base_reg
 import pycaret.classification as pycaret_base_cls
 
 from utils import get_model_info
-from constants import MODELS_DICT, EXCLUDED_MODELS
+from constants import MODELS_DICT, EXCLUDED_MODELS, MODEL_DETAILS_TEMPLATE
 
 
-def process_dataset_inner_function(pycaret_base, data, y):
+
+def process_dataset(data:pd.core.frame.DataFrame, target:str, problem_type:str) -> bool:
+    """
+    This function processes the uploaded dataset to determine the best model for the given problem.
+    
+    Parameters:
+        data (pd.core.frame.DataFrame): The dataset to be processed.
+        target (str): The target variable or column in the dataset.
+        problem_type (str): The type of problem, whether it's regression or classification.
+
+    Returns:
+        bool: True if the processing is successful, False otherwise.
+
+    Description:
+        This function takes a pandas DataFrame containing the dataset, the name of the target variable, and the type of problem to be solved (regression or classification).
+        It then performs data preprocessing, feature engineering, and model selection to find the most suitable model for the given dataset.
+        The function stores various details such as environment information, model comparison data, model evaluation data, and the final selected model in the session state.
+        Finally, it returns True if the processing is successful, indicating that the best model has been determined and stored in the session state, or False if an error occurs during processing.
+    """
+
+    if target not in data.columns:  
+        return {"Error": f"target_variable column '{target}' not found in the uploaded dataset!"}
+    
     try:
-        # profile_report = generate_profile_report(data)
-        # print(YDATA_PROFILE_REPORT_TEXT, unsafe_allow_html=True)
-            
-        _ = pycaret_base.setup(data, target=y)
+        st.session_state['data'] = data
+        
+        pycaret_base = {
+            'classification': pycaret_base_cls,
+            'regression': pycaret_base_reg
+        }
+        pycaret_base = pycaret_base[problem_type]
+        st.session_state['pycaret_base'] = pycaret_base
+        
+        pycaret_base.setup(data=data, target=target)
         environment_details_data = pycaret_base.pull()
+        st.session_state['environment_details_data'] = str(environment_details_data)
  
         X_train_columns = pycaret_base.get_config("X_train").columns
         X_test = pycaret_base.get_config("X_test").head(1).values.tolist()
+        st.session_state['X_train_columns'], st.session_state['X_test'] = X_train_columns, X_test
         
         best_model = pycaret_base.compare_models(exclude=EXCLUDED_MODELS)
         model_comparision_data = pycaret_base.pull()
+        st.session_state['model_comparision_data'] = str(model_comparision_data)
             
-        if best_model is not None:
-            try:
-                model_name = type(best_model).__name__
-                print(f"Best model: {model_name}")
-                
-                model_id = MODELS_DICT.get(model_name, None)
-                model_definition, model_info_links = get_model_info(model_name)
-
-                if model_id is not None:
-                    final_created_model = pycaret_base.create_model(model_id)
-                    _ = pycaret_base.tune_model(final_created_model)
-                    _ = pycaret_base.evaluate_model(final_created_model)
-                    
-                    model_evaluation_data = pycaret_base.pull()
-
-                    serialized_model = {
-                        "model_name": model_name,
-                        "final_model": str(final_created_model),
-                        "model_definition": model_definition,
-                        "model_info_links": model_info_links,
-                        "environment_details_data": str(environment_details_data),
-                        "model_comparision_data": str(model_comparision_data),
-                        "model_evaluation_data": str(model_evaluation_data),                      
-                    }
-                    
-                    return serialized_model, best_model, X_train_columns
-
-                else:
-                    return "Woops, couldn't find a valid model for this one!"
-            
-            except Exception as e:
-                return f"An error occurred while building and evaluating the best model: {str(e)}"
+        model_name = type(best_model).__name__
+        st.session_state['model_name'] = model_name
         
-    except Exception as e:
-        return f"An error occurred while finding the best model: {str(e)}"
-    
+        model_id = MODELS_DICT.get(model_name, None)
+        model_definition, model_info_link = get_model_info(model_name)
+        st.session_state['model_definition'], st.session_state['model_info_link'] = model_definition, model_info_link
 
-def process_dataset(data, target, problem_type):
-    try:
-        pycaret_base = pycaret_base_cls if problem_type == 'classification' else pycaret_base_reg if problem_type in ['regression', 'classification'] else None
-        print(f"Processing dataset for {problem_type}...")
+        final_model = pycaret_base.create_model(model_id)
+        pycaret_base.tune_model(final_model)
+        pycaret_base.evaluate_model(final_model)
+        st.session_state['final_model'] = final_model
+
+        model_evaluation_data = pycaret_base.pull()
+        st.session_state['model_evaluation_data'] = str(model_evaluation_data)
+
+        return True
         
-        all_info, best_model, X_columns = process_dataset_inner_function(pycaret_base=pycaret_base,
-                            data=data,
-                            y=target
-                        )
-            
-        return {"summary": all_info}, best_model, X_columns
+    except Exception:
+        return False
 
-    except Exception as e:
-        return f"An error occurred while processing the dataset: {str(e)}"
-    
-
-def call_backend_api(uploaded_data_df, target_variable, problem_type):
-    try:
-        print(colored(f"Processing dataset for {problem_type}...", "green"))
-        print(colored(f"target_variable variable: {target_variable}", "green"))
-
-        if target_variable not in uploaded_data_df.columns:
-            return {"error": f"target_variable column '{target_variable}' not found in the uploaded dataset!"}
-
-        process_dataset_response, best_model, X_columns = process_dataset(uploaded_data_df, target_variable, problem_type)
-        print(colored(process_dataset_response, "green"))
-        
-        return process_dataset_response, X_columns, pycaret_base_cls if problem_type == 'classification' else pycaret_base_reg if problem_type in ['regression', 'classification'] else None, best_model
-
-    except Exception as e:
-        return f"An error occurred: {e}", False, False, False
-        
-    
-def display_response(response: dict) -> None:
+def display_response() -> None:
     """
-    Process the response from the api and display the results in a formatted manner.
-    """
-    data = response["summary"]
-    try:
-        model_name, final_model, model_definition, model_info_link = list(data.items())[:4]
+    This function displays the response generated from the processing function.
 
+    Parameters:
+        None
+
+    Returns:
+        None
+
+    Description:
+        This function is responsible for displaying the response generated from the processing function.
+        It retrieves the stored response from the session state, which includes information such as model comparison data, evaluation metrics, and the final selected model.
+        The response is then formatted and presented to the user for interpretation.
+        If there is no stored response or if an error occurs while retrieving it, an appropriate message is displayed to notify the user.
+    """
+    
+    model_name = st.session_state["model_name"]
+    final_model = st.session_state["final_model"]
+    model_definition = st.session_state["model_definition"]
+    model_info_link = st.session_state["model_info_link"]
+    
+    try:
         with st.expander("Model details", expanded=True):
-            st.write(f"""
-##### **Best model:** 
-#### {model_name[1]}
+            st.write(MODEL_DETAILS_TEMPLATE.format(
+                    model_name=model_name, final_model=str(final_model), model_definition=model_definition, model_info_link=model_info_link
+            ), unsafe_allow_html=True)
 
-###### **Parameters:** <br>
-```
-{final_model[1]}
-```
-
-##### **Description:** <br>
-{model_definition[1]}
-
-For more details, check out the following link:<br>
-{model_info_link[1]}
-            """, unsafe_allow_html=True)
-
-        for keys, values in list(data.items())[-3:]:
-            with st.expander(keys.replace("_", " ").title(), expanded=True):
-                st.code(values)
+        for key in sorted([i for i in st.session_state.keys() if "_data" in i]):
+            with st.expander(key.replace("_", " ").title(), expanded=True):
+                st.code(st.session_state[key])
         
     except Exception as e: 
-        st.error(response)
-    
+        st.error(f"An error occurred while displaying the model details: {str(e)}")
+
 if __name__ == "__main__":
-    call_backend_api("misc/Iris.csv", "Species", "classification", ["Id"])
+    import pandas as pd
+    df = pd.read_csv("misc/Iris.csv")
+    df = pd.DataFrame(df)
+    
+    with st.spinner():
+        response = process_dataset(df, "Species", "classification")
+    
+    st.write(st.session_state)

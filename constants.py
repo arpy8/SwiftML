@@ -68,3 +68,19 @@ MODEL_NAME_INFO = {
     "KNeighborsRegressor": ["KNN regression predicts using nearest neighbors, lacking distribution assumptions. Linear regression assumes a linear relationship and estimates coefficients through OLS. KNN is non-parametric and computationally demanding due to distance computations. Linear regression, parametric and interpretable, requires data to adhere to assumptions like homoscedasticity. KNN is suitable for non-linear data, but choosing K is critical. Linear regression's efficiency and interpretability make it favorable for large datasets with linear relationships, provided assumptions are met.", 
                              "https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsRegressor.html"]
 }
+
+MODEL_DETAILS_TEMPLATE = """
+##### **Best model:** 
+#### {model_name}
+
+###### **Parameters:** <br>
+```
+{final_model}
+```
+
+##### **Description:** <br>
+{model_definition}
+
+For more details, check out the following link:<br    
+{model_info_link}
+"""
