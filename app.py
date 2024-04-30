@@ -62,7 +62,7 @@ with st.sidebar:
                         'margin-bottom': '30px',
                         },
             },
-        default_choice=1)
+        default_choice=0)
 
 if selected_task == 'Home Page':
     st.write(open('assets/html_components/home.html', 'r').read(), unsafe_allow_html=True)
