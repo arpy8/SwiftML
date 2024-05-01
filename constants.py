@@ -83,6 +83,6 @@ MODEL_DETAILS_TEMPLATE = """
 ##### **Description:** <br>
 {model_definition}
 
-For more details, check out the following link:<br    
+For more details, check out the following link: <br>
 {model_info_link}
 """
