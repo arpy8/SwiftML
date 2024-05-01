@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 from st_on_hover_tabs import on_hover_tabs
 
-from constants import BACKGROUND, PAGE_ICON, MODEL_DETAILS_TEMPLATE
+from constants import BACKGROUND, PAGE_ICON, MODEL_DETAILS_TEMPLATE 
 from train_model import process_dataset, display_response
 
 
